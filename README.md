@@ -1,7 +1,7 @@
 GitLab Cookbook
 ===============
 
-Chef to install The GitLab.
+Chef cookbook with recipes to install GitLab.
 
 * GitLab: 6.0.0
 * GitLab Shell: 1.7.1
@@ -172,6 +172,9 @@ Add `gitlab::update` to `run_list`.
 admin@local.host
 5iveL!fe
 ```
+
+## Credentials
+This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab).
 
 ## Links
 
