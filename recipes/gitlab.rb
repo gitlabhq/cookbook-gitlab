@@ -80,10 +80,11 @@ template File.join(gitlab['path'], "config", "unicorn.rb") do
 end
 
 ### Copy the example Rack attack config
-file "#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}" do
+remote_file "rack_attack.rb" do
+  path "#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}"
+  source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/config/initializers/rack_attack.rb.example"
   user gitlab['user']
   group gitlab['group']
-  content IO.read("#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb.example")}")
 end
 
 ### Uncomment a line in application.rb
@@ -228,9 +229,10 @@ end
 case gitlab['env']
 when 'production'
   ## Install Init Script
-  file "/etc/init.d/gitlab" do
+  remote_file "init.d" do
+    source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/lib/support/init.d/gitlab"
+    path "/etc/init.d/gitlab"
     mode 0755
-    content IO.read("#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}")
   end
 
   bash "Set the correct credentials" do
