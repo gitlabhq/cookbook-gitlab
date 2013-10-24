@@ -79,6 +79,23 @@ template File.join(gitlab['path'], "config", "unicorn.rb") do
   })
 end
 
+### Copy the example Rack attack config
+file "#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}" do
+  user gitlab['user']
+  group gitlab['group']
+  content IO.read("#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb.example")}")
+end
+
+### Uncomment a line in application.rb
+bash "Uncomment a line in application.rb" do
+  code <<-EOS
+    sed -i "/# config.middleware.use Rack::Attack/ s/# *//" "#{File.join(gitlab['path'], "config", "application.rb")}"
+  EOS
+  user gitlab['user']
+  group gitlab['group']
+end
+
+
 ### Configure Git global settings for git user, useful when editing via web
 bash "git config" do
   code <<-EOS
@@ -211,14 +228,16 @@ end
 case gitlab['env']
 when 'production'
   ## Install Init Script
-  template "/etc/init.d/gitlab" do
-    source "initd.erb"
+  file "/etc/init.d/gitlab" do
     mode 0755
-    variables({
-      :path => gitlab['path'],
-      :user => gitlab['user'],
-      :env => gitlab['env']
-    })
+    content IO.read("#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}")
+  end
+
+  bash "Set the correct credentials" do
+    code <<-EOS
+      sed -i "s/app_root=\"\/home\/git\/gitlab\"/app_root=\""#{gitlab['path']}"\"/" /etc/init.d/gitlab
+      sed -i "s/app_user=\"git\"/app_user=\""#{gitlab['user']}"\"/" /etc/init.d/gitlab
+    EOS
   end
 
   ## Start Your GitLab Instance
