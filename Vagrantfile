@@ -100,5 +100,8 @@ Vagrant.configure("2") do |config|
       "gitlab::initial",
       "gitlab::install"
     ]
+    # In case chef-solo run is failing silently
+    # uncomment the line below to enable debug log level.
+    # chef.arguments = '-l debug'
   end
 end
