@@ -173,6 +173,16 @@ admin@local.host
 5iveL!fe
 ```
 
+## Testing the cookbook
+
+To check for syntax errors run foodcritic:
+
+```bash
+foodcritic .
+```
+
+assuming that you are inside cookbook-gitlab directory.
+
 ## Credentials
 This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab).
 

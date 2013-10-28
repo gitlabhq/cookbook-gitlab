@@ -81,7 +81,7 @@ end
 
 ### Copy the example Rack attack config
 remote_file "rack_attack.rb" do
-  path "#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}"
+  path File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")
   source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/config/initializers/rack_attack.rb.example"
   user gitlab['user']
   group gitlab['group']
