@@ -15,6 +15,10 @@ describe "gitlab::initial" do
         stub_command("git --version >/dev/null").and_return(true)
       end
 
+      it "includes recepies from external cookbooks" do
+        expect(chef_run).to include_recipe("apt::default")
+      end
+
       it "installs all default packages" do
         packages = chef_run.node['gitlab']['packages']
         packages.each do |pkg|
