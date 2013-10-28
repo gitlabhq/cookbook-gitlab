@@ -175,6 +175,12 @@ admin@local.host
 
 ## Testing the cookbook
 
+First install the necessary gems
+
+```bash
+bundle install
+```
+
 To check for syntax errors run foodcritic:
 
 ```bash
