@@ -1,3 +1,8 @@
+#
+# Cookbook Name:: gitlab
+# Recipe:: gems
+#
+
 gitlab = node['gitlab']
 
 # Merge environmental variables
