@@ -8,17 +8,6 @@ gitlab = node['gitlab']
 # Merge environmental variables
 gitlab = Chef::Mixin::DeepMerge.merge(gitlab,gitlab[gitlab['env']])
 
-# 6. GitLab
-## Clone the Source
-git gitlab['path'] do
-  repository gitlab['repository']
-  revision gitlab['revision']
-  user gitlab['user']
-  group gitlab['group']
-  action :sync
-end
-
-## Configure it
 ### Copy the example GitLab config
 template File.join(gitlab['path'], 'config', 'gitlab.yml') do
   source "gitlab.yml.erb"
@@ -79,17 +68,10 @@ template File.join(gitlab['path'], "config", "unicorn.rb") do
   })
 end
 
-### Copy the example Rack attack config
-remote_file "rack_attack.rb" do
-  path File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")
-  source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/config/initializers/rack_attack.rb.example"
-  user gitlab['user']
-  group gitlab['group']
-end
-
-### Uncomment a line in application.rb
-bash "Uncomment a line in application.rb" do
+### Enable Rack attack
+bash "Enable rack attack" do
   code <<-EOS
+    cp #{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb.example")} #{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}
     sed -i "/# config.middleware.use Rack::Attack/ s/# *//" "#{File.join(gitlab['path'], "config", "application.rb")}"
   EOS
   user gitlab['user']
@@ -118,49 +100,6 @@ template File.join(gitlab['path'], "config", "database.yml") do
     :user => gitlab['user'],
     :password => gitlab['database_password']
   })
-end
-
-## Install Gems
-gem_package "charlock_holmes" do
-  version "0.6.9.4"
-  options "--no-ri --no-rdoc"
-end
-
-template File.join(gitlab['home'], ".gemrc") do
-  source "gemrc.erb"
-  user gitlab['user']
-  group gitlab['group']
-  notifies :run, "execute[bundle install]", :immediately
-end
-
-### without
-bundle_without = []
-case gitlab['database_adapter']
-when 'mysql'
-  bundle_without << 'postgres'
-  bundle_without << 'aws'
-when 'postgresql'
-  bundle_without << 'mysql'
-  bundle_without << 'aws'
-end
-
-case gitlab['env']
-when 'production'
-  bundle_without << 'development'
-  bundle_without << 'test'
-else
-  bundle_without << 'production'
-end
-
-execute "bundle install" do
-  command <<-EOS
-    PATH="/usr/local/bin:$PATH"
-    #{gitlab['bundle_install']} --without #{bundle_without.join(" ")}
-  EOS
-  cwd gitlab['path']
-  user gitlab['user']
-  group gitlab['group']
-  action :nothing
 end
 
 ### db:setup
@@ -228,31 +167,22 @@ end
 
 case gitlab['env']
 when 'production'
-  ## Install Init Script
-  remote_file "init.d" do
-    source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/lib/support/init.d/gitlab"
-    path "/etc/init.d/gitlab"
-    mode 0755
-  end
-
-  bash "Set the correct credentials" do
+  ## Setup Init Script
+  bash "Use the latest version of init script and set the correct credentials" do
     code <<-EOS
+      cp #{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")} /etc/init.d/gitlab
+      chmod +x /etc/init.d/gitlab
       sed -i "s/app_root=\"\/home\/git\/gitlab\"/app_root=\""#{gitlab['path']}"\"/" /etc/init.d/gitlab
       sed -i "s/app_user=\"git\"/app_user=\""#{gitlab['user']}"\"/" /etc/init.d/gitlab
+      update-rc.d gitlab defaults 21
     EOS
   end
 
-  ## Start Your GitLab Instance
-  service "gitlab" do
-    supports :start => true, :stop => true, :restart => true, :status => true
-    action :enable
-  end
-
-  file File.join(gitlab['home'], ".gitlab_start") do
-    owner gitlab['user']
-    group gitlab['group']
-    action :create_if_missing
-    notifies :start, "service[gitlab]"
+  ## Setup logrotate
+  bash "Setup logrotate" do
+    code <<-EOS
+      cp #{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")} /etc/logrotate.d/gitlab
+    EOS
   end
 else
   ## For execute javascript test
