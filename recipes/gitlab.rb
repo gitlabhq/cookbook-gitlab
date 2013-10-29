@@ -70,8 +70,9 @@ template File.join(gitlab['path'], "config", "unicorn.rb") do
 end
 
 ### Enable Rack attack
-file "rack_attack.rb" do
+remote_file "rack_attack.rb" do
   path File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb')
+  source "file://#{File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb.example')}"
   owner gitlab['user']
   group gitlab['group']
   mode 0644
@@ -178,10 +179,11 @@ end
 case gitlab['env']
 when 'production'
   ## Setup Init Script
-  file "gitlab_init" do
-    path "/etc/init.d/gitlab"
-    mode 0755
-    notifies :run, "execute[set gitlab to start on boot]", :immediately
+  remote_file "gitlab_init" do
+   path "/etc/init.d/gitlab"
+   source "file://#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}"
+   mode 0755
+   notifies :run, "execute[set gitlab to start on boot]", :immediately
   end
 
   # Updates defaults so gitlab can boot on start. As per man pages of update-rc.d runs only if links do not exist
@@ -191,8 +193,9 @@ when 'production'
   end
 
   ## Setup logrotate
-  file "logrotate" do
+  remote_file "logrotate" do
     path "/etc/logrotate.d/gitlab"
+    source "file://#{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")}"
     mode 0644
   end
 else
