@@ -68,17 +68,10 @@ template File.join(gitlab['path'], "config", "unicorn.rb") do
   })
 end
 
-### Copy the example Rack attack config
-remote_file "rack_attack.rb" do
-  path "#{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}"
-  source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/config/initializers/rack_attack.rb.example"
-  user gitlab['user']
-  group gitlab['group']
-end
-
-### Uncomment a line in application.rb
-bash "Uncomment a line in application.rb" do
+### Enable Rack attack
+bash "Enable rack attack" do
   code <<-EOS
+    cp #{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb.example")} #{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}
     sed -i "/# config.middleware.use Rack::Attack/ s/# *//" "#{File.join(gitlab['path'], "config", "application.rb")}"
   EOS
   user gitlab['user']
@@ -174,15 +167,11 @@ end
 
 case gitlab['env']
 when 'production'
-  ## Install Init Script
-  remote_file "init.d" do
-    source "https://raw.github.com/gitlabhq/gitlabhq/#{gitlab['revision']}/lib/support/init.d/gitlab"
-    path "/etc/init.d/gitlab"
-    mode 0755
-  end
-
-  bash "Set the correct credentials" do
+  ## Setup Init Script
+  bash "Use the latest version of init script and set the correct credentials" do
     code <<-EOS
+      cp #{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")} /etc/init.d/gitlab
+      chmod +x /etc/init.d/gitlab
       sed -i "s/app_root=\"\/home\/git\/gitlab\"/app_root=\""#{gitlab['path']}"\"/" /etc/init.d/gitlab
       sed -i "s/app_user=\"git\"/app_user=\""#{gitlab['user']}"\"/" /etc/init.d/gitlab
     EOS

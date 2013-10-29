@@ -11,7 +11,17 @@ gitlab = Chef::Mixin::DeepMerge.merge(gitlab,gitlab[gitlab['env']])
 # Setup all package, user, etc. requirements of GitLab
 include_recipe "gitlab::initial"
 
-# Setup gitlab_shell
+# 4. GitLab shell
+## Clone gitlab shell
+git gitlab['shell_path'] do
+  repository gitlab['shell_repository']
+  revision gitlab['shell_revision']
+  user gitlab['user']
+  group gitlab['group']
+  action :sync
+end
+
+# Configure GitLab shell
 include_recipe "gitlab::gitlab_shell"
 
 # Setup chosen database
