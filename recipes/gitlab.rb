@@ -174,6 +174,14 @@ when 'production'
       chmod +x /etc/init.d/gitlab
       sed -i "s/app_root=\"\/home\/git\/gitlab\"/app_root=\""#{gitlab['path']}"\"/" /etc/init.d/gitlab
       sed -i "s/app_user=\"git\"/app_user=\""#{gitlab['user']}"\"/" /etc/init.d/gitlab
+      update-rc.d gitlab defaults 21
+    EOS
+  end
+
+  ## Setup logrotate
+  bash "Setup logrotate" do
+    code <<-EOS
+      cp #{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")} /etc/logrotate.d/gitlab
     EOS
   end
 else
