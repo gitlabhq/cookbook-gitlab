@@ -22,6 +22,7 @@ describe "gitlab::initial" do
         expect(chef_run).to include_recipe("redisio::install")
         expect(chef_run).to include_recipe("redisio::enable")
         expect(chef_run).to include_recipe("ruby_build::default")
+        expect(chef_run).to include_recipe("gitlab::users")
       end
 
       it "installs all default packages" do
@@ -29,6 +30,10 @@ describe "gitlab::initial" do
         packages.each do |pkg|
           expect(chef_run).to install_package(pkg)
         end
+      end
+
+      it "installs bundler gem" do
+        expect(chef_run).to install_gem_package("bundler")
       end
     end
   end
@@ -51,6 +56,7 @@ describe "gitlab::initial" do
         expect(chef_run).to include_recipe("redisio::install")
         expect(chef_run).to include_recipe("redisio::enable")
         expect(chef_run).to include_recipe("ruby_build::default")
+        expect(chef_run).to include_recipe("gitlab::users")
       end
 
       it "installs all default packages" do
@@ -58,6 +64,10 @@ describe "gitlab::initial" do
         packages.each do |pkg|
           expect(chef_run).to install_package(pkg)
         end
+      end
+
+      it "installs bundler gem" do
+        expect(chef_run).to install_gem_package("bundler")
       end
     end
   end
