@@ -97,7 +97,6 @@ Vagrant.configure("2") do |config|
     chef.run_list = [
       "apt",
       "postfix",
-      "gitlab::initial",
       "gitlab::install"
     ]
     # In case chef-solo run is failing silently
