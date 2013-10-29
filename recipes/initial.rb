@@ -41,16 +41,4 @@ gem_package "bundler" do
   options "--no-ri --no-rdoc"
 end
 
-
-# 3. System Users
-## Create user for Gitlab.
-user gitlab['user'] do
-  comment "GitLab user"
-  home gitlab['home']
-  shell "/bin/bash"
-  supports :manage_home => true
-end
-
-user gitlab['user'] do
-  action :lock
-end
+include_recipe "gitlab::users"
