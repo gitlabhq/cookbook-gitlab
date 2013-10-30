@@ -189,6 +189,12 @@ foodcritic .
 
 assuming that you are inside cookbook-gitlab directory.
 
+Run tests with:
+
+```bash
+bundle exec rspec
+```
+
 ## Credentials
 This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab).
 
