@@ -1,7 +1,7 @@
 ## NOTE!
 # Currently database recipes are untested
 # This should be improved when the circumstances allow
-# Rasons are explained here: https://github.com/sethvargo/chefspec/blob/v3.0.1/README.md#testing-lwrps
+# Reasons are explained here: https://github.com/sethvargo/chefspec/blob/v3.0.1/README.md#testing-lwrps
 #
 
 require 'spec_helper'

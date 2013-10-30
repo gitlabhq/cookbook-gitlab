@@ -195,8 +195,8 @@ Run tests with:
 bundle exec rspec
 ```
 
-## Credentials
-This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab).
+## Acknowledgement
+This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab). Thank you ogom!
 
 ## Links
 
