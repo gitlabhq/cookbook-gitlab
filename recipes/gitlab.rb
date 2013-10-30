@@ -27,7 +27,9 @@ template File.join(gitlab['path'], 'config', 'gitlab.yml') do
 end
 
 ### Make sure GitLab can write to the log/ and tmp/ directories
-%w{log tmp}.each do |path|
+### Create directories for sockets/pids
+### Create public/uploads directory otherwise backup will fail
+%w{log tmp tmp/pids tmp/sockets public/uploads}.each do |path|
   directory File.join(gitlab['path'], path) do
     owner gitlab['user']
     group gitlab['group']
@@ -41,32 +43,12 @@ directory gitlab['satellites_path'] do
   group gitlab['group']
 end
 
-### Create directories for sockets/pids and make sure GitLab can write to them
-%w{tmp/pids tmp/sockets}.each do |path|
-  directory File.join(gitlab['path'], path) do
-    owner gitlab['user']
-    group gitlab['group']
-    mode 0755
-  end
-end
-
-### Create public/uploads directory otherwise backup will fail
-%w{public/uploads}.each do |path|
-  directory File.join(gitlab['path'], path) do
-    owner gitlab['user']
-    group gitlab['group']
-    mode 0755
-  end
-end
-
 ### Copy the example Unicorn config
-template File.join(gitlab['path'], "config", "unicorn.rb") do
-  source "unicorn.rb.erb"
-  user gitlab['user']
+remote_file "unicorn.rb" do
+  path File.join(gitlab['path'], 'config', 'unicorn.rb')
+  source "file://#{File.join(gitlab['path'], 'config', 'unicorn.rb.example')}"
+  owner gitlab['user']
   group gitlab['group']
-  variables({
-    :path => gitlab['path']
-  })
 end
 
 ### Enable Rack attack

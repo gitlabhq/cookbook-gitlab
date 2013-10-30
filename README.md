@@ -173,8 +173,30 @@ admin@local.host
 5iveL!fe
 ```
 
-## Credentials
-This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab).
+## Testing the cookbook
+
+First install the necessary gems
+
+```bash
+bundle install
+```
+
+To check for syntax errors run foodcritic:
+
+```bash
+foodcritic .
+```
+
+assuming that you are inside cookbook-gitlab directory.
+
+Run tests with:
+
+```bash
+bundle exec rspec
+```
+
+## Acknowledgement
+This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab). Thank you ogom!
 
 ## Links
 
