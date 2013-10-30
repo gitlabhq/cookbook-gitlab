@@ -13,7 +13,6 @@ template File.join(gitlab['shell_path'], "config.yml") do
   source "gitlab_shell.yml.erb"
   user gitlab['user']
   group gitlab['group']
-  notifies :run, "execute[gitlab-shell install]", :immediately
   variables({
     :user => gitlab['user'],
     :home => gitlab['home'],
@@ -24,6 +23,7 @@ template File.join(gitlab['shell_path'], "config.yml") do
     :redis_port => gitlab['redis_port'],
     :namespace => gitlab['namespace']
   })
+  notifies :run, "execute[gitlab-shell install]", :immediately
 end
 
 ## Do setup
@@ -36,10 +36,12 @@ execute "gitlab-shell install" do
   user gitlab['user']
   group gitlab['group']
   action :nothing
+  notifies :create, "link[create symlink for gitlab-shell path for development]", :immediately
 end
 
 # Symlink gitlab-shell to vagrant home, so that sidekiq can use gitlab shell commands
-link "#{gitlab['home']}/gitlab-shell" do
+link "create symlink for gitlab-shell path for development" do
+  target_file "#{gitlab['home']}/gitlab-shell"
   to gitlab['shell_path']
-  not_if { File.exists?("#{gitlab['home']}/gitlab-shell") }
+  not_if { gitlab['env'] == "production" }
 end
