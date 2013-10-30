@@ -23,6 +23,7 @@ template File.join(gitlab['path'], 'config', 'gitlab.yml') do
     :repos_path => gitlab['repos_path'],
     :shell_path => gitlab['shell_path']
   })
+  notifies :run, "bash[git config]", :immediately
 end
 
 ### Make sure GitLab can write to the log/ and tmp/ directories
@@ -69,13 +70,22 @@ template File.join(gitlab['path'], "config", "unicorn.rb") do
 end
 
 ### Enable Rack attack
-bash "Enable rack attack" do
+remote_file "rack_attack.rb" do
+  path File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb')
+  source "file://#{File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb.example')}"
+  owner gitlab['user']
+  group gitlab['group']
+  mode 0644
+  notifies :run, "bash[Enable rack attack in application.rb]", :immediately
+end
+
+bash "Enable rack attack in application.rb" do
   code <<-EOS
-    cp #{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb.example")} #{File.join(gitlab['path'], "config", "initializers", "rack_attack.rb")}
     sed -i "/# config.middleware.use Rack::Attack/ s/# *//" "#{File.join(gitlab['path'], "config", "application.rb")}"
   EOS
   user gitlab['user']
   group gitlab['group']
+  action :nothing
 end
 
 
@@ -89,6 +99,7 @@ bash "git config" do
   user gitlab['user']
   group gitlab['group']
   environment('HOME' => gitlab['home'])
+  action :nothing
 end
 
 ## Configure GitLab DB settings
@@ -168,21 +179,24 @@ end
 case gitlab['env']
 when 'production'
   ## Setup Init Script
-  bash "Use the latest version of init script and set the correct credentials" do
-    code <<-EOS
-      cp #{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")} /etc/init.d/gitlab
-      chmod +x /etc/init.d/gitlab
-      sed -i "s/app_root=\"\/home\/git\/gitlab\"/app_root=\""#{gitlab['path']}"\"/" /etc/init.d/gitlab
-      sed -i "s/app_user=\"git\"/app_user=\""#{gitlab['user']}"\"/" /etc/init.d/gitlab
-      update-rc.d gitlab defaults 21
-    EOS
+  remote_file "gitlab_init" do
+   path "/etc/init.d/gitlab"
+   source "file://#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}"
+   mode 0755
+   notifies :run, "execute[set gitlab to start on boot]", :immediately
+  end
+
+  # Updates defaults so gitlab can boot on start. As per man pages of update-rc.d runs only if links do not exist
+  execute "set gitlab to start on boot" do
+    command "update-rc.d gitlab defaults 21"
+    action :nothing
   end
 
   ## Setup logrotate
-  bash "Setup logrotate" do
-    code <<-EOS
-      cp #{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")} /etc/logrotate.d/gitlab
-    EOS
+  remote_file "logrotate" do
+    path "/etc/logrotate.d/gitlab"
+    source "file://#{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")}"
+    mode 0644
   end
 else
   ## For execute javascript test
