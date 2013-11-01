@@ -93,8 +93,10 @@ ruby_block "Copy from example rack attack config" do
     resource.group gitlab['group']
     resource.mode 0644
     resource.run_action :create
+    if resource.updated?
+      self.notifies :run, resources(bash: "Enable rack attack in application.rb"), :immediately
+    end
   end
-  notifies :run, "bash[Enable rack attack in application.rb]", :immediately
 end
 
 bash "Enable rack attack in application.rb" do
@@ -218,8 +220,10 @@ when 'production'
       resource.content IO.read("#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}")
       resource.mode 0755
       resource.run_action :create
+      if resource.updated?
+        self.notifies :run, resources(execute: "set gitlab to start on boot"), :immediately
+      end
     end
-    notifies :run, "execute[set gitlab to start on boot]", :immediately
   end
 
   # Updates defaults so gitlab can boot on start. As per man pages of update-rc.d runs only if links do not exist
