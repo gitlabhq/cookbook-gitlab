@@ -44,20 +44,56 @@ directory gitlab['satellites_path'] do
 end
 
 ### Copy the example Unicorn config
-remote_file "unicorn.rb" do
-  path File.join(gitlab['path'], 'config', 'unicorn.rb')
-  source "file://#{File.join(gitlab['path'], 'config', 'unicorn.rb.example')}"
-  owner gitlab['user']
-  group gitlab['group']
+# Creating the file this way for the following reasons
+# 1. Chef 11.4.0 must be used to keep support for AWS OpsWorks
+# 2. Using file resource is not an option because it is ran at compilation time
+# and at that point the file doesn't exist
+# 3. Using cookbook_file resource is not an option because we do not want to include the file
+# in the cookbook for maintenance reasons. Same for template resource.
+# 4. Using remote_file resource is not an option because Chef 11.4.0 connects to remote URI
+# see https://github.com/opscode/chef/blob/11.4.4/lib/chef/resource/remote_file.rb#L63
+# 5 Using bash and execute resource is not an option because they would run at every chef run
+# and supplying a restriction in the form of "not_if" would prevent an update of a file
+# if there is any
+# Ruby block is compiled at compilation time but only executed during execution time
+# allowing us to create a resource.
+
+ruby_block "Copy from example Unicorn config" do
+  block do
+    resource = Chef::Resource::File.new("unicorn.rb", run_context)
+    resource.path File.join(gitlab['path'], 'config', 'unicorn.rb')
+    resource.content IO.read("#{File.join(gitlab['path'], 'config', 'unicorn.rb.example')}")
+    resource.owner gitlab['user']
+    resource.group gitlab['group']
+    resource.run_action :create
+  end
 end
 
 ### Enable Rack attack
-remote_file "rack_attack.rb" do
-  path File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb')
-  source "file://#{File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb.example')}"
-  owner gitlab['user']
-  group gitlab['group']
-  mode 0644
+# Creating the file this way for the following reasons
+# 1. Chef 11.4.0 must be used to keep support for AWS OpsWorks
+# 2. Using file resource is not an option because it is ran at compilation time
+# and at that point the file doesn't exist
+# 3. Using cookbook_file resource is not an option because we do not want to include the file
+# in the cookbook for maintenance reasons. Same for template resource.
+# 4. Using remote_file resource is not an option because Chef 11.4.0 connects to remote URI
+# see https://github.com/opscode/chef/blob/11.4.4/lib/chef/resource/remote_file.rb#L63
+# 5 Using bash and execute resource is not an option because they would run at every chef run
+# and supplying a restriction in the form of "not_if" would prevent an update of a file
+# if there is any
+# Ruby block is compiled at compilation time but only executed during execution time
+# allowing us to create a resource.
+
+ruby_block "Copy from example rack attack config" do
+  block do
+    resource = Chef::Resource::File.new("rack_attack.rb", run_context)
+    resource.path File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb')
+    resource.content IO.read("#{File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb.example')}")
+    resource.owner gitlab['user']
+    resource.group gitlab['group']
+    resource.mode 0644
+    resource.run_action :create
+  end
   notifies :run, "bash[Enable rack attack in application.rb]", :immediately
 end
 
@@ -161,11 +197,29 @@ end
 case gitlab['env']
 when 'production'
   ## Setup Init Script
-  remote_file "gitlab_init" do
-   path "/etc/init.d/gitlab"
-   source "file://#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}"
-   mode 0755
-   notifies :run, "execute[set gitlab to start on boot]", :immediately
+  # Creating the file this way for the following reasons
+  # 1. Chef 11.4.0 must be used to keep support for AWS OpsWorks
+  # 2. Using file resource is not an option because it is ran at compilation time
+  # and at that point the file doesn't exist
+  # 3. Using cookbook_file resource is not an option because we do not want to include the file
+  # in the cookbook for maintenance reasons. Same for template resource.
+  # 4. Using remote_file resource is not an option because Chef 11.4.0 connects to remote URI
+  # see https://github.com/opscode/chef/blob/11.4.4/lib/chef/resource/remote_file.rb#L63
+  # 5 Using bash and execute resource is not an option because they would run at every chef run
+  # and supplying a restriction in the form of "not_if" would prevent an update of a file
+  # if there is any
+  # Ruby block is compiled at compilation time but only executed during execution time
+  # allowing us to create a resource.
+
+  ruby_block "Copy from example gitlab init config" do
+    block do
+      resource = Chef::Resource::File.new("gitlab_init", run_context)
+      resource.path "/etc/init.d/gitlab"
+      resource.content IO.read("#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}")
+      resource.mode 0755
+      resource.run_action :create
+    end
+    notifies :run, "execute[set gitlab to start on boot]", :immediately
   end
 
   # Updates defaults so gitlab can boot on start. As per man pages of update-rc.d runs only if links do not exist
@@ -175,10 +229,28 @@ when 'production'
   end
 
   ## Setup logrotate
-  remote_file "logrotate" do
-    path "/etc/logrotate.d/gitlab"
-    source "file://#{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")}"
-    mode 0644
+  # Creating the file this way for the following reasons
+  # 1. Chef 11.4.0 must be used to keep support for AWS OpsWorks
+  # 2. Using file resource is not an option because it is ran at compilation time
+  # and at that point the file doesn't exist
+  # 3. Using cookbook_file resource is not an option because we do not want to include the file
+  # in the cookbook for maintenance reasons. Same for template resource.
+  # 4. Using remote_file resource is not an option because Chef 11.4.0 connects to remote URI
+  # see https://github.com/opscode/chef/blob/11.4.4/lib/chef/resource/remote_file.rb#L63
+  # 5 Using bash and execute resource is not an option because they would run at every chef run
+  # and supplying a restriction in the form of "not_if" would prevent an update of a file
+  # if there is any
+  # Ruby block is compiled at compilation time but only executed during execution time
+  # allowing us to create a resource.
+
+  ruby_block "Copy from example logrotate config" do
+    block do
+      resource = Chef::Resource::File.new("logrotate", run_context)
+      resource.path "/etc/logrotate.d/gitlab"
+      resource.content IO.read("#{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")}")
+      resource.mode 0644
+      resource.run_action :create
+    end
   end
 else
   ## For execute javascript test

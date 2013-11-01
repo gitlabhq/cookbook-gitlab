@@ -52,7 +52,10 @@ Vagrant.configure("2") do |config|
 
   # Install the version of Chef by the Vagrant Omnibus
   # version is :latest or "11.4.0"
-  config.omnibus.chef_version = :latest
+  # Note:
+  # Using version "11.4.0" because that is the latest version
+  # AWS OpsWorks supports
+  config.omnibus.chef_version = "11.4.0"
 
   # The path to the Berksfile to use with Vagrant Berkshelf
   # config.berkshelf.berksfile_path = "./Berksfile"
