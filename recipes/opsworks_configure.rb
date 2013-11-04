@@ -3,6 +3,10 @@
 # Recipe:: opsworks_setup
 #
 # Used for AWS OpsWorks configure section
+gitlab = node['gitlab']
+
+# Merge environmental variables
+gitlab = Chef::Mixin::DeepMerge.merge(gitlab,gitlab[gitlab['env']])
 
 # Fetch GitLab shell source code
 include_recipe "gitlab::gitlab_shell_source"
