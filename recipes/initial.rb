@@ -13,6 +13,12 @@ directory "/tmp" do
   mode 0777
 end
 
+# Remove ruby 1.8.7 installation
+if platform?("ubuntu", "debian")
+  package 'ruby1.8' do
+    action :purge
+  end
+end
 
 # 1. Packages / Dependencies
 include_recipe "apt" if platform?("ubuntu", "debian")
