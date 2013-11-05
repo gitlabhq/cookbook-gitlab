@@ -62,18 +62,19 @@ describe "gitlab::gitlab" do
       end
 
       it 'copies unicorn.rb example file' do
-        expect(chef_run).to create_remote_file('/home/git/gitlab/config/unicorn.rb').with(source: "file:///home/git/gitlab/config/unicorn.rb.example")
+        expect(chef_run).to run_ruby_block('Copy unicorn config file from example')
       end
 
       it 'copies rack_attack.rb example file' do
-        expect(chef_run).to create_remote_file('/home/git/gitlab/config/initializers/rack_attack.rb').with(mode: 0644, source: "file:///home/git/gitlab/config/initializers/rack_attack.rb.example")
+        expect(chef_run).to run_ruby_block('Copy from example rack attack config')
       end
 
       describe "creating rack_attack.rb" do
-        let(:copied_file) { chef_run.remote_file('/home/git/gitlab/config/initializers/rack_attack.rb') }
 
         it 'triggers uncommenting the line in application.rb' do
-          expect(copied_file).to notify('bash[Enable rack attack in application.rb]').to(:run).immediately
+          # TODO Write the test that will check if notification is triggered within the ruby_block
+          expect(chef_run).to run_ruby_block('Copy from example rack attack config')
+          # expect(copied_file).to notify('bash[Enable rack attack in application.rb]').to(:run).immediately
         end
       end
 
@@ -274,15 +275,15 @@ describe "gitlab::gitlab" do
       end
 
       it 'copies gitlab init example file' do
-        expect(chef_run).to create_remote_file('/etc/init.d/gitlab').with(source: "file:///home/git/gitlab/lib/support/init.d/gitlab")
+        expect(chef_run).to run_ruby_block('Copy from example gitlab init config')
       end
 
       describe "creating gitlab init" do
-        let(:copied_file) { chef_run.remote_file('/etc/init.d/gitlab') }
-
         describe "for production" do
+          # TODO Write the test that will check if notification is triggered within the ruby_block
           it 'triggers service defaults update' do
-            expect(copied_file).to notify('execute[set gitlab to start on boot]').to(:run).immediately
+            expect(chef_run).to run_ruby_block('Copy from example gitlab init config')
+            # expect(chef_run).to notify('execute[set gitlab to start on boot]').to(:run).immediately
           end
         end
 
@@ -363,18 +364,19 @@ describe "gitlab::gitlab" do
       end
 
       it 'copies unicorn.rb example file' do
-        expect(chef_run).to create_remote_file('/home/git/gitlab/config/unicorn.rb').with(source: "file:///home/git/gitlab/config/unicorn.rb.example")
+        expect(chef_run).to run_ruby_block('Copy unicorn config file from example')
       end
 
       it 'copies rack_attack.rb example file' do
-        expect(chef_run).to create_remote_file('/home/git/gitlab/config/initializers/rack_attack.rb').with(mode: 0644, source: "file:///home/git/gitlab/config/initializers/rack_attack.rb.example")
+        expect(chef_run).to run_ruby_block('Copy from example rack attack config')
       end
 
       describe "creating rack_attack.rb" do
-        let(:copied_file) { chef_run.remote_file('/home/git/gitlab/config/initializers/rack_attack.rb') }
 
         it 'triggers uncommenting the line in application.rb' do
-          expect(copied_file).to notify('bash[Enable rack attack in application.rb]').to(:run).immediately
+          # TODO Write the test that will check if notification is triggered within the ruby_block
+          expect(chef_run).to run_ruby_block('Copy from example rack attack config')
+          # expect(copied_file).to notify('bash[Enable rack attack in application.rb]').to(:run).immediately
         end
       end
 
@@ -575,15 +577,16 @@ describe "gitlab::gitlab" do
       end
 
       it 'copies gitlab init example file' do
-        expect(chef_run).to create_remote_file('/etc/init.d/gitlab').with(source: "file:///home/git/gitlab/lib/support/init.d/gitlab")
+        expect(chef_run).to run_ruby_block('Copy from example gitlab init config')
       end
 
       describe "creating gitlab init" do
-        let(:copied_file) { chef_run.remote_file('/etc/init.d/gitlab') }
 
         describe "for production" do
+          # TODO Write the test that will check if notification is triggered within the ruby_block
           it 'triggers service defaults update' do
-            expect(copied_file).to notify('execute[set gitlab to start on boot]').to(:run).immediately
+            expect(chef_run).to run_ruby_block('Copy from example gitlab init config')
+            # expect(chef_run).to notify('execute[set gitlab to start on boot]').to(:run).immediately
           end
         end
 
@@ -595,7 +598,7 @@ describe "gitlab::gitlab" do
           end
 
           it 'copies gitlab init example file' do
-            expect(chef_run).to_not create_remote_file('/etc/init.d/gitlab').with(source: "file:///home/git/gitlab/lib/support/init.d/gitlab")
+            expect(chef_run).to_not run_ruby_block("Copy from example gitlab init config")
           end
 
           it 'includes phantomjs recipe' do

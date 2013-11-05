@@ -58,11 +58,11 @@ end
 # Ruby block is compiled at compilation time but only executed during execution time
 # allowing us to create a resource.
 
-ruby_block "Copy from example Unicorn config" do
+ruby_block "Copy unicorn config file from example" do
   block do
     resource = Chef::Resource::File.new("unicorn.rb", run_context)
     resource.path File.join(gitlab['path'], 'config', 'unicorn.rb')
-    resource.content IO.read("#{File.join(gitlab['path'], 'config', 'unicorn.rb.example')}")
+    resource.content IO.read(File.join(gitlab['path'], 'config', 'unicorn.rb.example'))
     resource.owner gitlab['user']
     resource.group gitlab['group']
     resource.run_action :create
@@ -88,7 +88,7 @@ ruby_block "Copy from example rack attack config" do
   block do
     resource = Chef::Resource::File.new("rack_attack.rb", run_context)
     resource.path File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb')
-    resource.content IO.read("#{File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb.example')}")
+    resource.content IO.read(File.join(gitlab['path'], 'config', 'initializers', 'rack_attack.rb.example'))
     resource.owner gitlab['user']
     resource.group gitlab['group']
     resource.mode 0644
@@ -217,7 +217,7 @@ when 'production'
     block do
       resource = Chef::Resource::File.new("gitlab_init", run_context)
       resource.path "/etc/init.d/gitlab"
-      resource.content IO.read("#{File.join(gitlab['path'], "lib", "support", "init.d", "gitlab")}")
+      resource.content IO.read(File.join(gitlab['path'], "lib", "support", "init.d", "gitlab"))
       resource.mode 0755
       resource.run_action :create
       if resource.updated?
@@ -251,7 +251,7 @@ when 'production'
     block do
       resource = Chef::Resource::File.new("logrotate", run_context)
       resource.path "/etc/logrotate.d/gitlab"
-      resource.content IO.read("#{File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab")}")
+      resource.content IO.read(File.join(gitlab['path'], "lib", "support", "logrotate", "gitlab"))
       resource.mode 0644
       resource.run_action :create
     end
