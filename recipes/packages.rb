@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: gitlab
-# Recipe:: initial
+# Recipe:: packages
 #
 
 gitlab = node['gitlab']
@@ -24,20 +24,3 @@ include_recipe "redisio::enable"
 gitlab['packages'].each do |pkg|
   package pkg
 end
-
-
-# 2. Ruby
-include_recipe "ruby_build"
-
-## Download and compile it:
-ruby_build_ruby gitlab['ruby'] do
-  prefix_path "/usr/local/"
-end
-
-## Install the Bundler Gem:
-gem_package "bundler" do
-  gem_binary "/usr/local/bin/gem"
-  options "--no-ri --no-rdoc"
-end
-
-include_recipe "gitlab::users"

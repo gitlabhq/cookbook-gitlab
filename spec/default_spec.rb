@@ -26,7 +26,9 @@ describe "gitlab::default" do
       end
 
       it "includes recipes from external cookbooks" do
-        expect(chef_run).to include_recipe("gitlab::initial")
+        expect(chef_run).to include_recipe("gitlab::packages")
+        expect(chef_run).to include_recipe("gitlab::ruby")
+        expect(chef_run).to include_recipe("gitlab::users")
         expect(chef_run).to include_recipe("gitlab::gitlab_shell_clone")
         expect(chef_run).to include_recipe("gitlab::gitlab_shell_install")
         expect(chef_run).to include_recipe("gitlab::database_mysql")
@@ -84,7 +86,9 @@ describe "gitlab::default" do
         end
 
         it "includes recipes from external cookbooks" do
-          expect(chef_run).to include_recipe("gitlab::initial")
+          expect(chef_run).to include_recipe("gitlab::packages")
+          expect(chef_run).to include_recipe("gitlab::ruby")
+          expect(chef_run).to include_recipe("gitlab::users")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_clone")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_install")
           expect(chef_run).to include_recipe("gitlab::database_postgresql")
@@ -108,7 +112,9 @@ describe "gitlab::default" do
         end
 
         it "includes recipes from external cookbooks" do
-          expect(chef_run).to include_recipe("gitlab::initial")
+          expect(chef_run).to include_recipe("gitlab::packages")
+          expect(chef_run).to include_recipe("gitlab::ruby")
+          expect(chef_run).to include_recipe("gitlab::users")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_clone")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_install")
           expect(chef_run).to include_recipe("gitlab::database_mysql")
@@ -169,7 +175,9 @@ describe "gitlab::default" do
       end
 
       it "includes recipes from external cookbooks" do
-        expect(chef_run).to include_recipe("gitlab::initial")
+        expect(chef_run).to include_recipe("gitlab::packages")
+        expect(chef_run).to include_recipe("gitlab::ruby")
+        expect(chef_run).to include_recipe("gitlab::users")
         expect(chef_run).to include_recipe("gitlab::gitlab_shell_clone")
         expect(chef_run).to include_recipe("gitlab::gitlab_shell_install")
         expect(chef_run).to include_recipe("gitlab::database_mysql")
@@ -227,7 +235,9 @@ describe "gitlab::default" do
         end
 
         it "includes recipes from external cookbooks" do
-          expect(chef_run).to include_recipe("gitlab::initial")
+          expect(chef_run).to include_recipe("gitlab::packages")
+          expect(chef_run).to include_recipe("gitlab::ruby")
+          expect(chef_run).to include_recipe("gitlab::users")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_clone")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_install")
           expect(chef_run).to include_recipe("gitlab::database_postgresql")
@@ -251,7 +261,9 @@ describe "gitlab::default" do
         end
 
         it "includes recipes from external cookbooks" do
-          expect(chef_run).to include_recipe("gitlab::initial")
+          expect(chef_run).to include_recipe("gitlab::packages")
+          expect(chef_run).to include_recipe("gitlab::ruby")
+          expect(chef_run).to include_recipe("gitlab::users")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_clone")
           expect(chef_run).to include_recipe("gitlab::gitlab_shell_install")
           expect(chef_run).to include_recipe("gitlab::database_mysql")
