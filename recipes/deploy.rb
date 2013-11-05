@@ -2,26 +2,28 @@
 # Cookbook Name:: gitlab
 # Recipe:: deploy
 #
-# Used for AWS OpsWorks configure section
+# This recipe is used for AWS OpsWorks deploy section
+# Any change must be tested against AWS OpsWorks stack
+
 gitlab = node['gitlab']
 
 # Merge environmental variables
 gitlab = Chef::Mixin::DeepMerge.merge(gitlab,gitlab[gitlab['env']])
 
 # Fetch GitLab shell source code
-include_recipe "gitlab::gitlab_shell_source"
+include_recipe "gitlab::gitlab_shell_clone"
 
-# Configure GitLab shell
-include_recipe "gitlab::gitlab_shell"
+# Configure and install GitLab shell
+include_recipe "gitlab::gitlab_shell_install"
 
 # Fetch GitLab source code
-include_recipe "gitlab::gitlab_source"
+include_recipe "gitlab::clone"
 
 # Install required gems
 include_recipe "gitlab::gems"
 
-# Configure GitLab
-include_recipe "gitlab::gitlab"
+# Configure and install GitLab
+include_recipe "gitlab::install"
 
 # Start GitLab if in production
 include_recipe "gitlab::start"
