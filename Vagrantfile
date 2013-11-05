@@ -74,28 +74,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
-      :postfix => {
-        :mail_type => "client",
-        :myhostname => "mail.localhost",
-        :mydomain => "localhost",
-        :myorigin => "mail.localhost",
-        :smtp_use_tls => "no"
-      },
-      :postgresql => {
-        :password => {
-          :postgres => "psqlpass"
-        }
-      },
-      :mysql => {
-        :server_root_password => "rootpass",
-        :server_repl_password => "replpass",
-        :server_debian_password => "debianpass"
-      },
-      :gitlab => {
-        :database_adapter => "mysql",
-        :database_password => "datapass",
-        :env => "production"
-      }
+      # Specify attributes you want to override here
     }
     chef.run_list = [
       "apt",
