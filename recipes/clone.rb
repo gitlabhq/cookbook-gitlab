@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: gitlab
-# Recipe:: gitlab_source
+# Recipe:: clone
 #
 
 gitlab = node['gitlab']

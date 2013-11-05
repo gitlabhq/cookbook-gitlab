@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: gitlab
-# Recipe:: opsworks_gitlab_deploy
+# Recipe:: deploy
 #
 # Used for AWS OpsWorks configure section
 gitlab = node['gitlab']

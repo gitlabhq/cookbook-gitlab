@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: gitlab
-# Recipe:: gitlab_shell
+# Recipe:: gitlab_shell_install
 #
 
 gitlab = node['gitlab']

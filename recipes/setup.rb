@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: gitlab
-# Recipe:: opsworks_setup
+# Recipe:: setup
 #
 # Used for AWS OpsWorks setup section
 
