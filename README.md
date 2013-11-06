@@ -127,7 +127,7 @@ To override default settings of this cookbook you have to supply a json to the n
 }
 ```
 
-### Database
+## Database
 
 Default database for this cookbook is `mysql`.
 To override default credentials for the database supply the following json to the node:
@@ -161,26 +161,26 @@ To use `postgresql` override default credentials by supplying the following json
 }
 ```
 
-### Recipes
+## Recipes
 
-#### clone
+### clone
 
 Clones the GitLab repository. Recipe uses the attributes in `attributes/default.rb` and, depending on the environment set,
 `attributes/development.rb` or `attributes/production.rb`.
 
-#### database_mysql
+### database_mysql
 
 Use to setup mysql database. Available attributes are listed in `attributes/default.rb`.
 
-#### database_posgresql
+### database_posgresql
 
 Use to setup postgresql database. Available attributes are listed in `attributes/default.rb`.
 
-#### default
+### default
 
 Default recipe, it includes two recipes: `setup` and `deploy`. Default recipe is being used to do the complete GitLab installation.
 
-#### deploy
+### deploy
 
 Used to clone, configure, setup and start a GitLab instance. `deploy` recipe can be used with AWS OpsWorks to deploy GitLab to an instance.
 To use with AWS OpsWorks:
@@ -191,39 +191,39 @@ To use with AWS OpsWorks:
 
 NOTE: Must be used in combination with `gitlab::setup` recipe.
 
-#### gems
+### gems
 
 This recipe decides what will be included and what will be ommited from the bundle install command and then it runs the bundle install.
 Inclusion or exclusion is decided based on the database selected and environment, using attributes in `attributes/default.rb`
 
-#### git
+### git
 
 Installs packages required for git and compiles it from source. Uses attributes provided in `attributes/git.rb`.
 
-#### gitlab_shell_clone
+### gitlab_shell_clone
 
 Clones the gitlab-shell repository. Recipe uses the attributes in `attributes/default.rb` and, depending on the environment set,
 `attributes/development.rb` or `attributes/production.rb`.
 
-#### gitlab_shell_install
+### gitlab_shell_install
 Creates a gitlab-shell config.yml from attributes in `attributes/default.rb` and, depending on the environment set,
 `attributes/development.rb` or `attributes/production.rb`. Runs `gitlab-shell` install script and install it.
 
-#### install
+### install
 Creates a gitlab config.yml, database.yml from attributes in `attributes/default.rb` and, depending on the environment set,
 `attributes/development.rb` or `attributes/production.rb`. Creates GitLab required directories and sets permissions. Copies the example files
 to their locations. Runs `db:setup`, `db:migrate`, `db:seed_fu` to prepare selected database for GitLab.
 
-#### nginx
+### nginx
 Installs and configures nginx for usage.
 
-#### packages
+### packages
 Installs all GitLab dependency packages supplied in `attributes/default.rb`.
 
-#### ruby
+### ruby
 Compiles ruby from source based on attributes in `attributes/default.rb`.
 
-#### setup
+### setup
 
 Includes `packages`, `ruby`, `users` and database recipes to prepare the server for GitLab.
 `setup` recipe can be used with AWS OpsWorks to setup requirements for GitLab.
@@ -235,15 +235,14 @@ To use with AWS OpsWorks:
 
 NOTE: Must be used in combination with `gitlab::deploy` recipe.
 
-#### start
+### start
 
 Enables gitlab service and starts GitLab.
 
-#### users
+### users
 
 Creates a GitLab user, default `git`.
 
-####
 
 ## Done!
 
@@ -257,26 +256,22 @@ admin@local.host
 ## Testing the cookbook
 
 First install the necessary gems
-
 ```bash
 bundle install
 ```
-
 To check for syntax errors run foodcritic:
-
 ```bash
 foodcritic .
 ```
-
 assuming that you are inside cookbook-gitlab directory.
 
 Run tests with:
-
 ```bash
 bundle exec rspec
 ```
 
 ## Acknowledgement
+
 This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab). Thank you ogom!
 
 ## Links
@@ -285,6 +280,6 @@ This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitla
 * [Qiita Document](http://qiita.com/items/6491a268bfc95d0a5be4)
 
 
-## License 
+## License
 
 * MIT
