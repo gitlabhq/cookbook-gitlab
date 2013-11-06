@@ -79,7 +79,7 @@ Vagrant.configure("2") do |config|
     chef.run_list = [
       "apt",
       "postfix",
-      "gitlab::install"
+      "gitlab::default"
     ]
     # In case chef-solo run is failing silently
     # uncomment the line below to enable debug log level.

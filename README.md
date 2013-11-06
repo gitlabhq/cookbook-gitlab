@@ -3,9 +3,9 @@ GitLab Cookbook
 
 Chef cookbook with recipes to install GitLab.
 
-* GitLab: 6.2.0
-* GitLab Shell: 1.7.1
-* Ruby: 2.0.0
+* GitLab: 6.2
+* GitLab Shell: 1.7.4
+* Ruby: 2.0.0p247
 * Redis: 2.6.13
 * Git: 1.7.12
 * Nginx: 1.1.19
@@ -30,18 +30,6 @@ Chef cookbook with recipes to install GitLab.
 * CentOS (6.4)
 
 
-## Attributes
-
-* Package
-* User
-* GitLab shell
-* GitLab shell config
-* GitLab hq
-* GitLab hq config
-* Gems
-* Git
-
-
 ## Installation
 
 ### Vagrant
@@ -52,14 +40,14 @@ Chef cookbook with recipes to install GitLab.
 $ gem install berkshelf
 $ vagrant plugin install vagrant-berkshelf
 $ vagrant plugin install vagrant-omnibus
-$ git clone git://github.com/ogom/cookbook-gitlab ./gitlab
+$ git clone git://github.com/gitlabhq/cookbook-gitlab ./gitlab
 $ cd ./gitlab/
 $ vagrant up
 ```
 
 #### Amazon Web Services
 
-Create instance.
+Creates an AWS instance.
 
 ```bash
 $ gem install berkshelf
@@ -67,9 +55,13 @@ $ vagrant plugin install vagrant-berkshelf
 $ vagrant plugin install vagrant-omnibus
 $ vagrant plugin install vagrant-aws
 $ vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
-$ git clone git://github.com/ogom/cookbook-gitlab ./gitlab
+$ git clone git://github.com/gitlabhq/cookbook-gitlab ./gitlab
 $ cd ./gitlab/
 $ cp ./example/Vagrantfile_aws ./Vagrantfile
+```
+Fill in the AWS credentials under the aws section in Vagrantfile and then run:
+
+```bash
 $ vagrant up --provider=aws
 ```
 
@@ -89,7 +81,7 @@ $ gem install knife-solo
 $ knife configure
 $ knife solo init ./chef-repo
 $ cd ./chef-repo/
-$ echo 'cookbook "gitlab", github: "ogom/cookbook-gitlab"' >> ./Berksfile
+$ echo 'cookbook "gitlab", github: "gitlabhq/cookbook-gitlab"' >> ./Berksfile
 $ berks install --path ./cookbooks
 $ knife solo prepare vagrant@127.0.0.1 -p 2222 -i ~/.vagrant.d/insecure_private_key
 $ editor ./nodes/127.0.0.1.json
@@ -99,7 +91,7 @@ $ knife solo cook vagrant@127.0.0.1 -p 2222 -i ~/.vagrant.d/insecure_private_key
 
 ## Usage
 
-Example of node config.
+To override default settings of this cookbook you have to supply a json to the node.
 
 ```json
 {
@@ -130,39 +122,128 @@ Example of node config.
   },
   "run_list":[
     "postfix",
-    "gitlab::initial",
-    "gitlab::install"
+    "gitlab::default"
   ]
 }
 ```
 
-### Database use mysql.
+### Database
 
-Set `mysql` to `database_adapter`.  
+Default database for this cookbook is `mysql`.
+To override default credentials for the database supply the following json to the node:
 
 ```json
 {
-...
+  "mysql": {
+    "server_root_password": "rootpass",
+    "server_repl_password": "replpass",
+    "server_debian_password": "debianpass"
+  },
   "gitlab": {
-    "database_adapter": "mysql"
+    "database_password": "datapass"
   }
 }
 ```
 
-### GitLab Update
-
-Add `gitlab::update` to `run_list`.  
+To use `postgresql` override default credentials by supplying the following json to the node:
 
 ```json
 {
-...
-  "run_list":[
-    "gitlab::update",
-    "gitlab::initial",
-    "gitlab::install"
-  ]
+  "posgtresql": {
+    "password": {
+      "postgres": "psqlpass"
+    }
+  },
+  "gitlab": {
+    "database_adapter": "postgresql",
+    "database_password": "datapass",
+  }
 }
 ```
+
+### Recipes
+
+#### clone
+
+Clones the GitLab repository. Recipe uses the attributes in `attributes/default.rb` and, depending on the environment set,
+`attributes/development.rb` or `attributes/production.rb`.
+
+#### database_mysql
+
+Use to setup mysql database. Available attributes are listed in `attributes/default.rb`.
+
+#### database_posgresql
+
+Use to setup postgresql database. Available attributes are listed in `attributes/default.rb`.
+
+#### default
+
+Default recipe, it includes two recipes: `setup` and `deploy`. Default recipe is being used to do the complete GitLab installation.
+
+#### deploy
+
+Used to clone, configure, setup and start a GitLab instance. `deploy` recipe can be used with AWS OpsWorks to deploy GitLab to an instance.
+To use with AWS OpsWorks:
+
+1. Use a preset `Rails App Server` layer or create a custom one
+1. Edit the layer
+1. Under section `Custom Chef Recipes` and `Deploy` fill in `gitlab::deploy` and save
+
+NOTE: Must be used in combination with `gitlab::setup` recipe.
+
+#### gems
+
+This recipe decides what will be included and what will be ommited from the bundle install command and then it runs the bundle install.
+Inclusion or exclusion is decided based on the database selected and environment, using attributes in `attributes/default.rb`
+
+#### git
+
+Installs packages required for git and compiles it from source. Uses attributes provided in `attributes/git.rb`.
+
+#### gitlab_shell_clone
+
+Clones the gitlab-shell repository. Recipe uses the attributes in `attributes/default.rb` and, depending on the environment set,
+`attributes/development.rb` or `attributes/production.rb`.
+
+#### gitlab_shell_install
+Creates a gitlab-shell config.yml from attributes in `attributes/default.rb` and, depending on the environment set,
+`attributes/development.rb` or `attributes/production.rb`. Runs `gitlab-shell` install script and install it.
+
+#### install
+Creates a gitlab config.yml, database.yml from attributes in `attributes/default.rb` and, depending on the environment set,
+`attributes/development.rb` or `attributes/production.rb`. Creates GitLab required directories and sets permissions. Copies the example files
+to their locations. Runs `db:setup`, `db:migrate`, `db:seed_fu` to prepare selected database for GitLab.
+
+#### nginx
+Installs and configures nginx for usage.
+
+#### packages
+Installs all GitLab dependency packages supplied in `attributes/default.rb`.
+
+#### ruby
+Compiles ruby from source based on attributes in `attributes/default.rb`.
+
+#### setup
+
+Includes `packages`, `ruby`, `users` and database recipes to prepare the server for GitLab.
+`setup` recipe can be used with AWS OpsWorks to setup requirements for GitLab.
+To use with AWS OpsWorks:
+
+1. Use a preset `Rails App Server` layer or create a custom one
+1. Edit the layer
+1. Under section `Custom Chef Recipes` and `Setup` fill in `gitlab::setup` and save
+
+NOTE: Must be used in combination with `gitlab::deploy` recipe.
+
+#### start
+
+Enables gitlab service and starts GitLab.
+
+#### users
+
+Creates a GitLab user, default `git`.
+
+####
 
 ## Done!
 
