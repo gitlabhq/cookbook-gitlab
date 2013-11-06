@@ -73,6 +73,17 @@ $ editor ./Vagrantfile
 $ vagrant provision
 ```
 
+#### AWS OpsWorks
+
+* Create a custom layer or use a predefined `Rails app server` layer.
+* Edit the layer
+* Under `Custom Chef Recipes` supply the url to the cookbook repository
+* Under `Setup` write `gitlab::setup` and press the + sign to add
+* Under `Deploy` write `gitlab::deploy` and press the + sign to add
+* Save changes made to the layer (Scroll to the bottom of the page for the Save button)
+* Go to Instances
+* Create a new instance(or use an existing one) and add the previously edited layer
+
 ### knife-solo
 
 ```bash
@@ -253,6 +264,17 @@ admin@local.host
 5iveL!fe
 ```
 
+## Development
+
+To use this cookbook to provision a development vagrant box add the following json to the `Vagrantfile` under the `chef.json` section:
+
+```json
+***
+"gitlab": {
+    "env": "development",
+  }
+```
+
 ## Testing
 
 First install the necessary gems
@@ -276,6 +298,16 @@ bundle exec rspec
 ## Acknowledgement
 
 This cookbook was based on work by [ogom](https://github.com/ogom/cookbook-gitlab). Thank you ogom!
+
+## Contributing
+
+We welcome all contributions.
+Proper Merge request must:
+
+1. Explain in description what it does
+1. Explain which platforms it is run on and which platforms are untested
+1. Contain passing `chefspec` tests
+
 
 ## Links
 
