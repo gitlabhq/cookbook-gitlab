@@ -9,11 +9,6 @@ gitlab = node['gitlab']
 gitlab = Chef::Mixin::DeepMerge.merge(gitlab,gitlab[gitlab['env']])
 
 ## Install Gems
-gem_package "charlock_holmes" do
-  version "0.6.9.4"
-  options "--no-ri --no-rdoc"
-end
-
 template File.join(gitlab['home'], ".gemrc") do
   source "gemrc.erb"
   user gitlab['user']
