@@ -16,7 +16,7 @@ default['gitlab']['ruby'] = "2.0.0-p247"
 
 # GitLab shell
 default['gitlab']['shell_repository'] = "https://github.com/gitlabhq/gitlab-shell.git"
-default['gitlab']['shell_revision'] = "v1.7.1"
+default['gitlab']['shell_revision'] = "v1.7.4"
 
 # GitLab hq
 default['gitlab']['repository'] = "https://github.com/gitlabhq/gitlabhq.git"
@@ -37,3 +37,23 @@ default['gitlab']['support_email'] = "support@localhost"
 
 # Gems
 default['gitlab']['bundle_install'] = "bundle install --path=.bundle --deployment"
+
+# Assumed defaults
+# database: mysql (option: postgresql)
+# environment: production (option: development)
+
+default['gitlab']['database_adapter'] = "mysql"
+default['gitlab']['database_password'] = "datapass"
+default['gitlab']['env'] = "production"
+
+default['mysql']['server_root_password'] = "rootpass"
+default['mysql']['server_repl_password'] = "replpass"
+default['mysql']['server_debian_password'] = "debianpass"
+
+default['postgresql']['password']['postgres'] = "psqlpass"
+
+default['postfix']['mail_type'] = "client"
+default['postfix']['myhostname'] = "mail.localhost"
+default['postfix']['mydomain'] = "localhost"
+default['postfix']['myorigin'] = "mail.localhost"
+default['postfix']['smtp_use_tls'] = "no"

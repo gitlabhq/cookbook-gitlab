@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe "gitlab::gitlab_shell" do
-  let(:chef_run) { ChefSpec::Runner.new.converge("gitlab::gitlab_shell") }
+describe "gitlab::gitlab_shell_install" do
+  let(:chef_run) { ChefSpec::Runner.new.converge("gitlab::gitlab_shell_install") }
 
 
   describe "under ubuntu" do
@@ -9,7 +9,7 @@ describe "gitlab::gitlab_shell" do
       let(:chef_run) do 
         runner = ChefSpec::Runner.new(platform: "ubuntu", version: version)
         runner.node.set['gitlab']['env'] = "production"
-        runner.converge("gitlab::gitlab_shell")
+        runner.converge("gitlab::gitlab_shell_install")
       end
 
       it 'creates a gitlab shell config' do
@@ -56,7 +56,7 @@ describe "gitlab::gitlab_shell" do
         let(:chef_run) do 
           runner = ChefSpec::Runner.new(platform: "ubuntu", version: version)
           runner.node.set['gitlab']['env'] = "development"
-          runner.converge("gitlab::gitlab_shell")
+          runner.converge("gitlab::gitlab_shell_install")
         end
 
         it 'symlinks gitlab-shell directory' do
@@ -71,7 +71,7 @@ describe "gitlab::gitlab_shell" do
       let(:chef_run) do 
         runner = ChefSpec::Runner.new(platform: "centos", version: version)
         runner.node.set['gitlab']['env'] = "production"
-        runner.converge("gitlab::gitlab_shell")
+        runner.converge("gitlab::gitlab_shell_install")
       end
 
       it 'creates a gitlab shell config' do
@@ -114,7 +114,7 @@ describe "gitlab::gitlab_shell" do
         let(:chef_run) do 
           runner = ChefSpec::Runner.new(platform: "centos", version: version)
           runner.node.set['gitlab']['env'] = "development"
-          runner.converge("gitlab::gitlab_shell")
+          runner.converge("gitlab::gitlab_shell_install")
         end
 
         it 'symlinks gitlab-shell directory' do

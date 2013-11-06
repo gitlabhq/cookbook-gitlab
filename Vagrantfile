@@ -52,7 +52,10 @@ Vagrant.configure("2") do |config|
 
   # Install the version of Chef by the Vagrant Omnibus
   # version is :latest or "11.4.0"
-  config.omnibus.chef_version = :latest
+  # Note:
+  # Using version "11.4.0" because that is the latest version
+  # AWS OpsWorks supports
+  config.omnibus.chef_version = "11.4.0"
 
   # The path to the Berksfile to use with Vagrant Berkshelf
   # config.berkshelf.berksfile_path = "./Berksfile"
@@ -71,33 +74,12 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
-      :postfix => {
-        :mail_type => "client",
-        :myhostname => "mail.localhost",
-        :mydomain => "localhost",
-        :myorigin => "mail.localhost",
-        :smtp_use_tls => "no"
-      },
-      :postgresql => {
-        :password => {
-          :postgres => "psqlpass"
-        }
-      },
-      :mysql => {
-        :server_root_password => "rootpass",
-        :server_repl_password => "replpass",
-        :server_debian_password => "debianpass"
-      },
-      :gitlab => {
-        :database_adapter => "mysql",
-        :database_password => "datapass",
-        :env => "production"
-      }
+      # Specify attributes you want to override here
     }
     chef.run_list = [
       "apt",
       "postfix",
-      "gitlab::install"
+      "gitlab::default"
     ]
     # In case chef-solo run is failing silently
     # uncomment the line below to enable debug log level.
