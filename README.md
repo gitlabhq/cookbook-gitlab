@@ -252,7 +252,7 @@ Enables gitlab service and starts GitLab.
 
 ### users
 
-Creates a GitLab user, default `git`.
+Creates a GitLab user called `git`.
 
 
 ## Done!
