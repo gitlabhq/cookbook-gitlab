@@ -84,21 +84,32 @@ $ vagrant provision
 * Go to Instances
 * Create a new instance(or use an existing one) and add the previously edited layer
 
-### knife-solo
+### chef-solo
+
+You can easily install your server even if you don't have chef-server by using chef-solo.
+This is useful if you have only one server that you have to maintain so having chef-server would be an overkill.
+# Note Following steps assume that you have git, ruby(> 1.8.7) and rubygems installed.
+To get GitLab installed do:
 
 ```bash
 $ gem install berkshelf
-$ gem install knife-solo
-$ knife configure
-$ knife solo init ./chef-repo
-$ cd ./chef-repo/
-$ echo 'cookbook "gitlab", github: "gitlabhq/cookbook-gitlab"' >> ./Berksfile
-$ berks install --path ./cookbooks
-$ knife solo prepare vagrant@127.0.0.1 -p 2222 -i ~/.vagrant.d/insecure_private_key
-$ editor ./nodes/127.0.0.1.json
-$ knife solo cook vagrant@127.0.0.1 -p 2222 -i ~/.vagrant.d/insecure_private_key --no-chef-check
+$ cd /tmp
+$ curl -LO https://www.opscode.com/chef/install.sh && sudo bash ./install.sh -v 11.4.4
+$ git clone https://github.com/gitlabhq/cookbook-gitlab.git /tmp/gitlab
+$ cd /tmp/gitlab
+$ berks install --path /tmp/cookbooks
+$ cat > /tmp/solo.rb << EOF
+cookbook_path    ["/tmp/cookbooks/", "/tmp/gitlab/"]
+log_level        :debug
+EOF
+$ cat > /tmp/solo.json << EOF
+{"gitlab": {"host": "HOSTNAME", "url": "http://FQDN:80/"}, "recipes":["gitlab::default"]}
+EOF
+$ chef-solo -c /tmp/solo.rb -j /tmp/solo.json
 ```
-
+Chef-solo command should start running and setting up GitLab and it's dependencies.
+No errors should be reported and at the end of the run you should be able to navigate to the
+`HOSTNAME` you specified using your browser and connect to the GitLab instance.
 
 ## Usage
 
