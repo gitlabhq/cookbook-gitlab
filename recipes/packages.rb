@@ -13,6 +13,11 @@ directory "/tmp" do
   mode 0777
 end
 
+# Make sure we have all common paths included in our environment
+magic_shell_environment 'PATH' do
+  value '/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin'
+end
+
 # 1. Packages / Dependencies
 include_recipe "apt" if platform?("ubuntu", "debian")
 include_recipe "yum::epel" if platform?("centos")
