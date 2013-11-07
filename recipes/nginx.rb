@@ -30,6 +30,12 @@ if platform_family?("rhel")
   directory gitlab['home'] do
     mode 0755
   end
+
+  %w( default.conf ssl.conf virtual.conf ).each do |conf|
+    file "/etc/nginx/conf.d/#{conf}" do
+      action :delete
+    end
+  end
 else
   link "/etc/nginx/sites-enabled/gitlab" do
     to "/etc/nginx/sites-available/gitlab"

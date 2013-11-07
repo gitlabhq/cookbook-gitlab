@@ -228,7 +228,11 @@ when 'production'
 
   # Updates defaults so gitlab can boot on start. As per man pages of update-rc.d runs only if links do not exist
   execute "set gitlab to start on boot" do
-    command "update-rc.d gitlab defaults 21"
+    if platform_family?("debian")
+      command "update-rc.d gitlab defaults 21"
+    else
+      command "chkconfig --level 21 gitlab on"
+    end
     action :nothing
   end
 
