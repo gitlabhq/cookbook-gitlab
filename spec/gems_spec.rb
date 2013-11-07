@@ -12,10 +12,6 @@ describe "gitlab::gems" do
         runner.converge("gitlab::gems")
       end
 
-      it 'installs charlock holmes with a specific version' do
-        expect(chef_run).to install_gem_package('charlock_holmes').with(version: '0.6.9.4', options: "--no-ri --no-rdoc")
-      end
-
       it 'creates a gemrc from template' do
         expect(chef_run).to create_template('/home/git/.gemrc').with(
           source: "gemrc.erb",
@@ -108,10 +104,6 @@ describe "gitlab::gems" do
         runner = ChefSpec::Runner.new(platform: "centos", version: version)
         runner.node.set['gitlab']['env'] = "production"
         runner.converge("gitlab::gems")
-      end
-
-      it 'installs charlock holmes with a specific version' do
-        expect(chef_run).to install_gem_package('charlock_holmes').with(version: '0.6.9.4', options: "--no-ri --no-rdoc")
       end
 
       it 'creates a gemrc from template' do
