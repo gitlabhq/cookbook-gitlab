@@ -88,7 +88,7 @@ $ vagrant provision
 
 You can easily install your server even if you don't have chef-server by using chef-solo.
 This is useful if you have only one server that you have to maintain so having chef-server would be an overkill.
-# Note Following steps assume that you have git, ruby(> 1.8.7) and rubygems installed.
+**Note** Following steps assume that you have git, ruby(> 1.8.7) and rubygems installed.
 To get GitLab installed do:
 
 ```bash
